@@ -42,6 +42,7 @@ void Dig::repair(void)
     int result = 0;
 
     result = ::lstat(this->path.c_str(), &this->base);
+    this->clearLine();
     if (result != 0) {
         fprintf(stderr, "Failed to stat %s: %s\n", this->path.c_str(), strerror(errno));
     } else {
@@ -61,6 +62,7 @@ void Dig::repair(const char *path)
 
     result = ::lstat(path, &stat);
     if (result != 0) {
+        this->clearLine();
         fprintf(stderr, "Failed to stat %s: %s\n", path, strerror(errno));
         this->errors++;
         goto ignore;
@@ -71,6 +73,7 @@ void Dig::repair(const char *path)
             this->directories++;
             DIR *d = opendir(path);
             if (!d) {
+                this->clearLine();
                 fprintf(stderr, "Failed to open directory %s: %s\n", path, strerror(errno));
                 this->errors++;
                 goto ignore;
@@ -113,6 +116,7 @@ void Dig::repair(const char *path)
     if (!this->dryRun)
         result = chown(path, uid, gid);
     if (result != 0) {
+        this->clearLine();
         fprintf(stderr, "Failed to chown file %s: %s\n", path, strerror(errno));
         this->errors++;
     }
@@ -129,8 +133,8 @@ void Dig::printStats(bool force)
     int cur = tb.millitm + (tb.time & 0xfffff) * 1000;
     if (cur - last > 100 || force) {
         last = cur;
-        fprintf(stderr, "%c[2K", 27);
-        fprintf(stderr, "\rFiles: %10lu Directories: %10lu Ignored: %10lu Errors: %10lu",
+        this->clearLine();
+        fprintf(stderr, "Files: %10lu Directories: %10lu Ignored: %10lu Errors: %10lu",
                 this->files,
                 this->directories,
                 this->ignored,

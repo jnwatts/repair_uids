@@ -19,6 +19,7 @@ private:
     void repair(const char *path);
     void printStats(bool force = false);
     void log(std::string path, uid_t orig_uid, gid_t orig_gid, uid_t new_uid, gid_t new_gid);
+    void clearLine(void) { fprintf(stderr, "%c[2K\r", 27); }
     
     std::string path;
     IdDb *db;

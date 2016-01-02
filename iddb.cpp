@@ -17,6 +17,16 @@ public:
         new_id(INVALID_ID)
     { }
 
+    std::string toString(void) {
+        stringstream ss;
+        ss << "{"
+            << this->name << ", "
+            << this->orig_id << "->"
+            << this->new_id
+            << "}";
+        return ss.str();
+    }
+
     std::string name;
     id_t orig_id;
     id_t new_id;

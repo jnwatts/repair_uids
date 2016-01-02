@@ -54,7 +54,8 @@ void IdDb::read(std::string orig_passwd, std::string new_passwd, std::string ori
     this->readFile(new_passwd, this->uids, "uids", false);
     this->readFile(new_group, this->gids, "gids", false);
 
-    this->buildIndex();
+    this->buildIndex(this->uids, this->uidIndex, "uids");
+    this->buildIndex(this->gids, this->gidIndex, "gids");
 }
 
 void IdDb::readFile(std::string filename, IdEntryList &list, std::string list_name, bool is_orig)
@@ -86,8 +87,19 @@ void IdDb::readFile(std::string filename, IdEntryList &list, std::string list_na
     }
 }
 
-void IdDb::buildIndex(void)
+void IdDb::buildIndex(IdEntryList &list, Int2IdEntryMap &index, std::string list_name)
 {
+    for (IdEntry *entry : list) {
+        auto iter = index.find(entry->orig_id);
+        if (iter == index.end()) {
+            index[entry->orig_id] = entry;
+        } else {
+            fprintf(stderr, "WARNING: Ignoring conflict of %s with existing %s in %s\n",
+                entry->toString().c_str(),
+                iter->second->toString().c_str(),
+                list_name.c_str());
+        }
+    }
 }
 
 IdEntry &IdDb::getEntry(std::string name, IdEntryList &list)

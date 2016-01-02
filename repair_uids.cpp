@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
             find_and_replace(log_file, "/", "_");
             log_file.insert(0, log_path + "/");
         }
-        //Dig dig(path, &db, log_file, dry_run);
-        //dig.repair();
+        Dig dig(path, &db, log_file, dry_run);
+        dig.repair();
     }
 
     return 0;

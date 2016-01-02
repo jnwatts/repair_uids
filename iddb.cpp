@@ -100,6 +100,20 @@ void IdDb::buildIndex(IdEntryList &list, Int2IdEntryMap &index, std::string list
                 list_name.c_str());
         }
     }
+
+    unsigned long entries_before = index.size();
+    for (auto iter = index.begin(); iter != index.end();) {
+        IdEntry &entry = *iter->second;
+        if (entry.orig_id == entry.new_id) {
+            // Remove ids that have not changed
+            index.erase(iter++);
+        } else {
+            ++iter;
+        }
+    }
+    fprintf(stderr, "Removed %lu unchanged entries from %s\n",
+            entries_before - index.size(),
+            list_name.c_str());
 }
 
 IdEntry &IdDb::getEntry(std::string name, IdEntryList &list)

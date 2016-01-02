@@ -59,19 +59,30 @@ void IdDb::read(std::string orig_passwd, std::string new_passwd, std::string ori
 
 void IdDb::readFile(std::string filename, IdEntryList &list, std::string list_name, bool is_orig)
 {
+    int line_number = 0;
     string line;
     ifstream f;
     f.open(filename);
     while (!f.eof()) {
         getline(f, line);
+        ++line_number;
         vector<string> fields = split_string(':', line);
-        // Both group and passwd place name and id in same field indecies
-        string &name = fields[0];
-        string &id_str = fields[2];
+        if (fields.size() >= 2) {
+            // Both group and passwd place name and id in same field indecies
+            string &name = fields[0];
+            string &id_str = fields[2];
 
-        IdEntry &entry = this->getEntry(name, list);
-        id_t &id = (is_orig ? entry.orig_id : entry.new_id);
-        stringstream(id_str) >> id;
+            IdEntry &entry = this->getEntry(name, list);
+            id_t &id = (is_orig ? entry.orig_id : entry.new_id);
+            if (id == INVALID_ID) {
+                stringstream(id_str) >> id;
+            } else {
+                fprintf(stderr, "WARNING: Ignoring duplicate entry for user %s at %s:%d\n",
+                    name.c_str(),
+                    filename.c_str(),
+                    line_number);
+            }
+        }
     }
 }
 

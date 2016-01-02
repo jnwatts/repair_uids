@@ -93,10 +93,6 @@ void Dig::repair(const char *path)
             }
             closedir(d);
         }
-    } else if (S_ISLNK(stat.st_mode)) {
-        // Path is a symlink, ignore it
-        this->ignored++;
-        goto ignore;
     } else {
         // Path is a file
     }
@@ -115,7 +111,7 @@ void Dig::repair(const char *path)
     this->log(path, stat.st_uid, stat.st_gid, uid, gid);
     
     if (!this->dryRun)
-        result = chown(path, uid, gid);
+        result = lchown(path, uid, gid);
     if (result != 0) {
         this->clearLine();
         fprintf(stderr, "Failed to chown file %s: %s\n", path, strerror(errno));

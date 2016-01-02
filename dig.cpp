@@ -45,6 +45,7 @@ void Dig::repair(void)
     this->clearLine();
     if (result != 0) {
         fprintf(stderr, "Failed to stat %s: %s\n", this->path.c_str(), strerror(errno));
+        this->errors++;
     } else {
         fprintf(stderr, "Searching %s\n", this->path.c_str());
         this->repair(path.c_str());

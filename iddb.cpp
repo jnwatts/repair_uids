@@ -116,5 +116,10 @@ IdEntry &IdDb::getEntry(std::string name, IdEntryList &list)
 
 id_t IdDb::transform(id_t id, Int2IdEntryMap &index)
 {
-    return INVALID_ID;
+    auto iter = index.find(id);
+    if (iter == index.end()) {
+        return id;
+    } else {
+        return iter->second->new_id;
+    }
 }
